@@ -1,9 +1,10 @@
 package com.todoapi.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.todoapi.dto.TodoDto;
-import com.todoapi.mapper.TodoMapper;
 import com.todoapi.model.Todo;
 import com.todoapi.repository.TodoRepository;
 import com.todoapi.service.TodoService;
@@ -39,18 +39,17 @@ public class TodoController {
         this.service = service;
     }
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     // Get all Todos Rest Api
     // http://localhost:8081/api/v1/todos
     @Operation(summary = "Get all todos", description = "Retrieve a list of all todos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/")
-    public ResponseEntity<Iterable<TodoDto>> list() {
-        Iterable<Todo> todos = repository.findAll();
-        List<TodoDto> todosDto = new ArrayList<>();
-        for (Todo todo : todos) {
-            todosDto.add(TodoMapper.mapToTodoDto(todo));
-        }
-        return ResponseEntity.ok(todosDto);
+    public ResponseEntity<List<TodoDto>> getAllTodos() {
+        List<TodoDto> todos = service.getAllTodos();
+        return ResponseEntity.ok(todos);
     }
     //
 
@@ -62,7 +61,7 @@ public class TodoController {
     public ResponseEntity<TodoDto> getById(@PathVariable Integer id) {
         Todo todo = service.getTodoById(id);
         if (todo != null) {
-            TodoDto todoDto = TodoMapper.mapToTodoDto(todo);
+            TodoDto todoDto = modelMapper.map(todo, TodoDto.class);
             return new ResponseEntity<>(todoDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -82,12 +81,12 @@ public class TodoController {
 
     // Add new Todo Rest Api
     // http://localhost:8081/api/v1/todos/add
-    @Operation(summary = "Crate new  Todo REST API", description = "Save new Todo on database")
+    @Operation(summary = "Create new  Todo REST API", description = "Save new Todo on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody Todo p) {
-        repository.save(p);
-        return ResponseEntity.ok("Todo added successfully");
+    public ResponseEntity<TodoDto> add(@RequestBody TodoDto todoDto) {
+        TodoDto savedTodo = service.addTodo(todoDto);
+        return new ResponseEntity<>(savedTodo, HttpStatus.CREATED);
     }
     //
 
@@ -123,8 +122,9 @@ public class TodoController {
     public ResponseEntity<List<TodoDto>> searchTodos(@RequestParam("keyword") String keyword) {
         List<Todo> todos = service.searchTodos(keyword);
         List<TodoDto> todosDto = todos.stream()
-                .map(TodoMapper::mapToTodoDto)
+                .map(todo -> modelMapper.map(todo, TodoDto.class))
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(todosDto);
     }
     //
@@ -137,24 +137,26 @@ public class TodoController {
     public ResponseEntity<List<TodoDto>> searchTodosByCategoryId(@RequestParam int categoryId) {
         List<Todo> todos = service.searchTodosByCategoryId(categoryId);
         List<TodoDto> todosDto = todos.stream()
-                .map(TodoMapper::mapToTodoDto)
+                .map(todo -> modelMapper.map(todo, TodoDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(todosDto);
     }
     //
 
-    // Get all todos Rest Api and obtain a stream data
-    // http://localhost:8081/api/v1/todos/stream-test
-    @Operation(summary = "Get all todos", description = "Retrieve a list of all todos")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @GetMapping("/stream-test")
-    public ResponseEntity<List<TodoDto>> getAllTodos() {
-        List<Todo> todos = service.getAllTodos();
-        List<TodoDto> todosDto = todos.stream()
-                .map(TodoMapper::mapToTodoDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(todosDto);
+    // Set a todo to complete
+    // http://localhost:8081/api/v1/todos/1/complete
+    @PatchMapping("{id}/complete")
+    public ResponseEntity<TodoDto> completeTodo(@PathVariable("id") int todoId) {
+        TodoDto updatedTodo = service.completeTodo(todoId);
+        return ResponseEntity.ok(updatedTodo);
     }
-    //
+
+    // Set a todo to in progress
+    // http://localhost:8081/api/v1/todos/1/inprogress
+    @PatchMapping("{id}/inprogress")
+    public ResponseEntity<TodoDto> inCompleteTodo(@PathVariable("id") int todoId) {
+        TodoDto updatedTodo = service.inProgressTodo(todoId);
+        return ResponseEntity.ok(updatedTodo);
+    }
 
 }

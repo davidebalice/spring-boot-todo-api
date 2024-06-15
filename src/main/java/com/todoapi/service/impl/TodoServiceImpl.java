@@ -2,11 +2,15 @@ package com.todoapi.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.todoapi.dto.TodoDto;
 import com.todoapi.exception.ResourceNotFoundException;
 import com.todoapi.model.Todo;
 import com.todoapi.repository.TodoRepository;
@@ -17,14 +21,35 @@ public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository repository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public TodoServiceImpl(TodoRepository repository) {
         this.repository = repository;
+    }
+
+    @Override
+    public List<TodoDto> getAllTodos() {
+
+        List<Todo> todos = repository.findAll();
+
+        return todos.stream().map((todo) -> modelMapper.map(todo, TodoDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Todo getTodoById(int todoId) {
         return repository.findById(todoId).orElseThrow(
                 () -> new ResourceNotFoundException("Todo", "id", todoId));
+    }
+
+    @Override
+    public TodoDto addTodo(TodoDto todoDto) {
+
+        Todo todo = modelMapper.map(todoDto, Todo.class);
+        Todo savedTodo = repository.save(todo);
+        TodoDto savedTodoDto = modelMapper.map(savedTodo, TodoDto.class);
+        return savedTodoDto;
     }
 
     @Override
@@ -80,10 +105,5 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public List<Todo> searchTodosByCategoryId(int categoryId) {
         return repository.findByCategoryId(categoryId);
-    }
-
-    @Override
-    public List<Todo> getAllTodos() {
-        return repository.findAll();
     }
 }

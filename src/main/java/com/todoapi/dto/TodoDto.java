@@ -20,6 +20,7 @@ public class TodoDto {
     private String title;
     private String description;
     private CategoryDto category;
+    private CategoryDto categoryDto;
     private boolean completed;
 
 }
