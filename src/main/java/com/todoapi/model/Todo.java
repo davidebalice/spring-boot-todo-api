@@ -39,6 +39,14 @@ public class Todo {
     @JoinColumn(name = "id_category")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -26,8 +27,6 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import com.todoapi.security.JwtAuthFilter;
 import com.todoapi.service.UserService;
@@ -60,32 +59,25 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("https://example.com"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-
-	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(cors -> cors.configurationSource(request -> {
 			List<String> allowedOrigins = new ArrayList<>();
 			allowedOrigins.add("http://localhost");
+			allowedOrigins.add("http://localhost:4200");
 			CorsConfiguration config = new CorsConfiguration();
 			config.setAllowedOrigins(allowedOrigins);
-			config.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH"));
+			config.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
 			config.setAllowedHeaders(Arrays.asList("*"));
 			config.setAllowCredentials(true);
 			return config;
 		}))
 				.authorizeHttpRequests((requests) -> requests
+						.requestMatchers(HttpMethod.OPTIONS, "/api/v1/**").permitAll()
 						.requestMatchers("/", "/home", "/public", "/actuator/**", "/api/v1/error", "/api/v1/login",
 								"/api/v1/csrf",
 								"swagger-ui.html", "/swagger-ui/**", "/v3/**")
 						.permitAll()
+						// .requestMatchers("/api/v1/products/image/**").permitAll()
 						.anyRequest().authenticated())
 
 				.formLogin((form) -> form
@@ -94,24 +86,39 @@ public class SecurityConfig {
 				.logout((logout) -> logout.permitAll())
 
 				.authenticationProvider(authenticationProvider())
+
 				.csrf(csrf -> csrf
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-						.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**", "POST"))
+						// .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**",
+						// "POST"))
 						// .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**",
 						// "PATCH"))
 						// .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/api/v1/**",
 						// "DELETE"))
+
 						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "POST"),
-								new AntPathRequestMatcher("/api/v1/login", "POST")))
+								new AntPathRequestMatcher("/api/v1/**", "POST"))
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "PATCH"),
+								new AntPathRequestMatcher("/api/v1/**", "PATCH"))
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "DELETE"),
+								new AntPathRequestMatcher("/api/v1/**", "DELETE"))
+
+						.ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "POST")))
+				// new AntPathRequestMatcher("/api/v1/products/add", "POST")))
+
+				// .ignoringRequestMatchers(new AntPathRequestMatcher("/api/v1/csrf", "POST"),
+				// new AntPathRequestMatcher("/api/v1/products/add", "POST")))
 
 				.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+
 				.exceptionHandling((exceptionHandling) -> exceptionHandling
 						.authenticationEntryPoint((request, response, authException) -> {
 							response.setContentType("application/json");
 							response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-							response.getWriter().write("{ \"message\": \"Unauthorized: Token expired\" }");
+							response.getWriter().write("{ \"message\": \"Unauthorized\" }");
 						}));
 		return http.build();
+
 	}
 
 	@Bean
