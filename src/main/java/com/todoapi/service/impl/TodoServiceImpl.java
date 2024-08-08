@@ -25,8 +25,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.todoapi.dto.TodoDto;
 import com.todoapi.exception.ResourceNotFoundException;
 import com.todoapi.model.Category;
+import com.todoapi.model.Status;
+import com.todoapi.model.Tag;
 import com.todoapi.model.Todo;
 import com.todoapi.repository.CategoryRepository;
+import com.todoapi.repository.StatusRepository;
+import com.todoapi.repository.TagRepository;
 import com.todoapi.repository.TodoRepository;
 import com.todoapi.service.TodoService;
 import com.todoapi.utility.FileUploadUtil;
@@ -39,13 +43,18 @@ public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository repository;
     private final CategoryRepository categoryRepository;
+    private final TagRepository tagRepository;
+    private final StatusRepository statusRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
-    public TodoServiceImpl(TodoRepository repository, CategoryRepository categoryRepository) {
+    public TodoServiceImpl(TodoRepository repository, CategoryRepository categoryRepository,
+            TagRepository tagRepository, StatusRepository statusRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
+        this.tagRepository = tagRepository;
+        this.statusRepository = statusRepository;
     }
 
     @Override
@@ -88,13 +97,26 @@ public class TodoServiceImpl implements TodoService {
             if (updatedTodo.getDescription() != null) {
                 existingTodo.setDescription(updatedTodo.getDescription());
             }
-            if (updatedTodo.getIdCategory() >= 1) {
-                Category category = categoryRepository.findById(updatedTodo.getIdCategory())
+            if (updatedTodo.getCategoryId() >= 1) {
+                Category category = categoryRepository.findById(updatedTodo.getCategoryId())
                         .orElseThrow(() -> new RuntimeException("Category not found"));
-
                 existingTodo.setCategory(category);
             }
-
+            if (updatedTodo.getCategoryId() >= 1) {
+                Category category = categoryRepository.findById(updatedTodo.getCategoryId())
+                        .orElseThrow(() -> new RuntimeException("Category not found"));
+                existingTodo.setCategory(category);
+            }
+            if (updatedTodo.getTagId() >= 1) {
+                Tag tag = tagRepository.findById(updatedTodo.getTagId())
+                        .orElseThrow(() -> new RuntimeException("Tag not found"));
+                existingTodo.setTag(tag);
+            }
+            if (updatedTodo.getStatusId() >= 1) {
+                Status status = statusRepository.findById(updatedTodo.getStatusId())
+                        .orElseThrow(() -> new RuntimeException("Tag not found"));
+                existingTodo.setStatus(status);
+            }
             if (updatedTodo.isCompleted() == true) {
                 existingTodo.setCompleted(true);
             } else {

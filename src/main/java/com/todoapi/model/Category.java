@@ -33,10 +33,7 @@ public class Category {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "id_category")
-    private int id_category;
-
-     @Column(name = "created_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

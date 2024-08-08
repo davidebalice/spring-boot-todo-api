@@ -49,7 +49,7 @@ public class CustomExceptionHandler {
         public int getErrorCode() {
             return errorCode;
         }
-    
+
         public void setErrorCode(int errorCode) {
             this.errorCode = errorCode;
         }
@@ -62,7 +62,5 @@ public class CustomExceptionHandler {
             this.message = message;
         }
 
-       
     }
 }
-

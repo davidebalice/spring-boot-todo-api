@@ -36,7 +36,7 @@ public class Todo {
     private boolean completed;
 
     @ManyToOne
-    @JoinColumn(name = "id_category")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne

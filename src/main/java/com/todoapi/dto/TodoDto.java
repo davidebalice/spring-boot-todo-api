@@ -1,28 +1,26 @@
 package com.todoapi.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.todoapi.model.Category;
+import com.todoapi.model.Status;
+import com.todoapi.model.Tag;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class TodoDto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String title;
     private String description;
-    private CategoryDto category;
-    private int idCategory;
-    private CategoryDto categoryDto;
+    private Category category;
+    private int categoryId;
+    private Tag tag;
+    private int tagId;
+    private Status status;
+    private int statusId;
     private boolean completed;
     private String imageUrl;
-
 }
