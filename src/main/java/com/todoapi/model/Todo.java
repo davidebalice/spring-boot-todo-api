@@ -2,6 +2,8 @@ package com.todoapi.model;
 
 import java.time.LocalDateTime;
 
+import com.todoapi.dto.UserTodoDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +48,10 @@ public class Todo {
     @ManyToOne
     @JoinColumn(name = "tag_id")
     private Tag tag;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

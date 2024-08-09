@@ -1,5 +1,6 @@
 package com.todoapi.dto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,4 +29,6 @@ public class UserDto {
 
     private String password;
     private String role;
+    private String profileImageUrl;
+
 }

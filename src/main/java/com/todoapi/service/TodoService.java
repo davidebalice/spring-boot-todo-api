@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.todoapi.dto.TodoCreateDto;
 import com.todoapi.dto.TodoDto;
 import com.todoapi.model.Todo;
 import com.todoapi.utility.FormatResponse;
@@ -23,9 +24,9 @@ public interface TodoService {
 
     List<TodoDto> getAllTodos();
 
-    TodoDto addTodo(TodoDto newTodo);
+    TodoDto addTodo(TodoCreateDto newTodo);
 
-    ResponseEntity<FormatResponse> updateTodo(int id, TodoDto updatedTodo);
+    ResponseEntity<FormatResponse> updateTodo(int id, TodoCreateDto updatedTodo);
 
     ResponseEntity<FormatResponse> deleteTodo(Integer idTodo);
 

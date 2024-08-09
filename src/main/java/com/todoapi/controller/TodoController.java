@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.todoapi.dto.TodoCreateDto;
 import com.todoapi.dto.TodoDto;
 import com.todoapi.model.Todo;
 import com.todoapi.repository.TodoRepository;
@@ -114,7 +115,7 @@ public class TodoController {
     @Operation(summary = "Create new  Todo REST API", description = "Save new Todo on database")
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
-    public ResponseEntity<TodoDto> add(@RequestBody TodoDto todoDto) {
+    public ResponseEntity<TodoDto> add(@RequestBody TodoCreateDto todoDto) {
         TodoDto savedTodo = service.addTodo(todoDto);
         return new ResponseEntity<>(savedTodo, HttpStatus.CREATED);
     }
@@ -125,7 +126,7 @@ public class TodoController {
     @Operation(summary = "Update Todo REST API", description = "Update Todo on database")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
-    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody TodoDto updatedTodo) {
+    public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody TodoCreateDto updatedTodo) {
         if (!repository.existsById(id)) {
             return new ResponseEntity<FormatResponse>(new FormatResponse("Todo not found"), HttpStatus.NOT_FOUND);
         }

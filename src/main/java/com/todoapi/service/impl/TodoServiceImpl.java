@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.todoapi.dto.TodoCreateDto;
 import com.todoapi.dto.TodoDto;
 import com.todoapi.exception.ResourceNotFoundException;
 import com.todoapi.model.Category;
@@ -73,7 +74,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public TodoDto addTodo(TodoDto todoDto) {
+    public TodoDto addTodo(TodoCreateDto todoDto) {
 
         Todo todo = modelMapper.map(todoDto, Todo.class);
         Todo savedTodo = repository.save(todo);
@@ -82,7 +83,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public ResponseEntity<FormatResponse> updateTodo(int id, TodoDto updatedTodo) {
+    public ResponseEntity<FormatResponse> updateTodo(int id, TodoCreateDto updatedTodo) {
         try {
             if (!repository.existsById(id)) {
                 return new ResponseEntity<FormatResponse>(new FormatResponse("Todo not found"),
@@ -205,7 +206,7 @@ public class TodoServiceImpl implements TodoService {
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
         Todo recipe = getTodoById(id);
-        TodoDto todoDto = modelMapper.map(recipe, TodoDto.class);
+        TodoCreateDto todoDto = modelMapper.map(recipe, TodoCreateDto.class);
         todoDto.setImageUrl(fileName);
         updateTodo(id, todoDto);
 

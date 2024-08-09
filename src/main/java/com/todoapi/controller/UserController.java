@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springdoc.core.annotations.RouterOperation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -133,6 +136,36 @@ public class UserController {
             }
         }
         return ResponseEntity.ok("User deleted successfully");
+    }
+    //
+
+    // Get data of Logged User
+    // http://localhost:8081/api/v1/users/me
+    @Operation(summary = "Get data of Logged User", description = "Retrieve data of Logged User")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
+    @GetMapping("/me")
+    public ResponseEntity<User> getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        String userEmail = authentication.getName();
+
+        ResponseEntity<User> loggedInUserResponse = userService.getUserByUsername(userEmail);
+
+        if (!loggedInUserResponse.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Logged user not found");
+        }
+
+        User loggedInUser = loggedInUserResponse.getBody();
+
+        if (loggedInUser == null) {
+            throw new RuntimeException("Logged user details are null");
+        }
+
+        return new ResponseEntity<>(loggedInUser, HttpStatus.OK);
     }
     //
 }

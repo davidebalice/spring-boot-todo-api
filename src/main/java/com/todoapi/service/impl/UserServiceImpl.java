@@ -97,4 +97,16 @@ public class UserServiceImpl implements UserService {
         );
         return modelMapper.map(user, UserDto.class);
     }
+
+    @Override
+    public ResponseEntity<User> getUserByUsername(String username) {
+        Optional<User> optionalUser = repository.findByUsername(username);
+    
+        if (optionalUser.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    
+        User user = optionalUser.get();
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 }
