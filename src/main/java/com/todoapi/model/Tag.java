@@ -26,4 +26,7 @@ public class Tag {
 
     @Column(nullable = false)
     private String color;
+
+    @Column(nullable = false)
+    private String icon;
 }

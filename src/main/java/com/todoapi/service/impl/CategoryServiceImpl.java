@@ -46,6 +46,12 @@ public class CategoryServiceImpl implements CategoryService {
             if (updateCategory.getName() != null) {
                 existingCategory.setName(updateCategory.getName());
             }
+            if (updateCategory.getColor() != null) {
+                existingCategory.setColor(updateCategory.getColor());
+            }
+            if (updateCategory.getIcon() != null) {
+                existingCategory.setIcon(updateCategory.getIcon());
+            }
 
             repository.save(existingCategory);
 
@@ -66,7 +72,6 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResourceNotFoundException("Category", "id", categoryId);
         }
     }
-    
 
     @Override
     public List<Category> searchCategories(String keyword) {

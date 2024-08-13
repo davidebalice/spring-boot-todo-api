@@ -33,6 +33,12 @@ public class Category {
     @Column(name = "description")
     private String description;
 
+    @Column(nullable = false)
+    private String color;
+
+    @Column(nullable = false)
+    private String icon;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

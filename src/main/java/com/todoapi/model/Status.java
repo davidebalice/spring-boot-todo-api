@@ -27,4 +27,6 @@ public class Status {
     @Column(nullable = false)
     private String color;
 
+    @Column(nullable = false)
+    private String icon;
 }
