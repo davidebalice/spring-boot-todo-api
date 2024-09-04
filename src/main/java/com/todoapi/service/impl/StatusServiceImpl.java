@@ -1,6 +1,5 @@
 package com.todoapi.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -45,7 +44,12 @@ public class StatusServiceImpl implements StatusService {
             if (updateStatus.getName() != null) {
                 existingStatus.setName(updateStatus.getName());
             }
-
+            if (updateStatus.getColor() != null) {
+                existingStatus.setColor(updateStatus.getColor());
+            }
+            if (updateStatus.getIcon() != null) {
+                existingStatus.setIcon(updateStatus.getIcon());
+            }
             repository.save(existingStatus);
 
             return new ResponseEntity<>("Status updated successfully", HttpStatus.OK);
