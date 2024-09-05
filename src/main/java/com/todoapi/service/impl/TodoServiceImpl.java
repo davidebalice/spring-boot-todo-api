@@ -151,11 +151,13 @@ public class TodoServiceImpl implements TodoService {
         }
     }
 
-    @Override
-    public List<Todo> searchTodos(String keyword, Pageable pageable) {
-        return repository.searchTodos(keyword, pageable);
-    }
-
+    /*
+     * @Override
+     * public List<Todo> searchTodos(String keyword, int CategoryId, Pageable
+     * pageable) {
+     * return repository.searchTodos(keyword, pageable);
+     * }
+     */
     @Override
     public List<Todo> searchTodosByCategoryId(int categoryId, Pageable pageable) {
         return repository.findByCategoryId(categoryId, pageable);

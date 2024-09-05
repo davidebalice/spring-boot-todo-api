@@ -63,12 +63,24 @@ public class TodoController {
     @Operation(summary = "Get all todos", description = "Retrieve a list of all todos")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @GetMapping("/")
-    public ResponseEntity<Map<String, Object>> list(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Map<String, Object>> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) Integer tagId,
+            @RequestParam(required = false) Integer statusId) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Iterable<Todo> todos = repository.findAll(pageable);
+
+        //if (keyword == null) keyword = ""; // o qualsiasi valore che corrisponde alla tua logica di filtro
+        if (categoryId == null) categoryId = 0;
+        if (tagId == null) tagId = 0;
+        if (statusId == null) statusId = 0;
+
+        Iterable<Todo> todos = repository.searchTodos(keyword, categoryId, tagId, statusId, pageable);
+
         List<TodoDto> todosDto = new ArrayList<>();
         for (Todo todo : todos) {
             TodoDto todoDto = modelMapper.map(todo, TodoDto.class);
@@ -142,28 +154,6 @@ public class TodoController {
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
         service.deleteTodo(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Todo deleted successfully!"), HttpStatus.OK);
-    }
-    //
-
-    // Search Todo Rest Api
-    // http://localhost:8081/api/v1/todos/search
-    @Operation(summary = "Search Todo REST API", description = "Search Todo on database by filter")
-    @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
-    @GetMapping("/search")
-    public ResponseEntity<Map<String, Object>> searchTodos(@RequestParam("keyword") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        List<Todo> todos = service.searchTodos(keyword, pageable);
-        List<TodoDto> todosDto = todos.stream()
-                .map(todo -> modelMapper.map(todo, TodoDto.class))
-                .collect(Collectors.toList());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("todos", todosDto);
-        response.put("totalItems", todos.size());
-
-        return ResponseEntity.ok(response);
     }
     //
 

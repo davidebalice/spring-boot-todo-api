@@ -29,9 +29,7 @@ public interface TodoService {
     ResponseEntity<FormatResponse> updateTodo(int id, TodoCreateDto updatedTodo);
 
     ResponseEntity<FormatResponse> deleteTodo(Integer idTodo);
-
-    List<Todo> searchTodos(String keyword, Pageable pageable);
-
+    
     List<Todo> searchTodosByCategoryId(int categoryId, Pageable pageable);
 
     ResponseEntity<FormatResponse> completeTodo(Integer idTodo, boolean value);
