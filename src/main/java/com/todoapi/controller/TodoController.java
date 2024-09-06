@@ -74,7 +74,7 @@ public class TodoController {
         Pageable pageable = PageRequest.of(page, size);
 
 
-        //if (keyword == null) keyword = ""; // o qualsiasi valore che corrisponde alla tua logica di filtro
+        if (keyword == null) keyword = ""; 
         if (categoryId == null) categoryId = 0;
         if (tagId == null) tagId = 0;
         if (statusId == null) statusId = 0;

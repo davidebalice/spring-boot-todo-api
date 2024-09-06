@@ -1,5 +1,6 @@
 package com.todoapi.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.todoapi.dto.UserTodoDto;
@@ -58,6 +59,9 @@ public class Todo {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "date")
+    private LocalDate date;
 
     @Column(name = "image_url")
     private String imageUrl;

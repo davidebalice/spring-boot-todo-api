@@ -92,6 +92,9 @@ public class TodoServiceImpl implements TodoService {
 
             Todo existingTodo = repository.findById(id).get();
 
+            if (updatedTodo.getDate() != null) {
+                existingTodo.setDate(updatedTodo.getDate());
+            }
             if (updatedTodo.getTitle() != null) {
                 existingTodo.setTitle(updatedTodo.getTitle());
             }

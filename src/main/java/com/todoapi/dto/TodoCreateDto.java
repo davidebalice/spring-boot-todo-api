@@ -1,5 +1,6 @@
 package com.todoapi.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -20,4 +21,5 @@ public class TodoCreateDto {
     private boolean completed;
     private String imageUrl;
     private LocalDateTime createdAt;
+    private LocalDate date;
 }

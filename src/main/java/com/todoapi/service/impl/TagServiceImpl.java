@@ -51,6 +51,7 @@ public class TagServiceImpl implements TagService {
             if (updateTag.getIcon() != null) {
                 existingTag.setIcon(updateTag.getIcon());
             }
+            
 
             repository.save(existingTag);
 

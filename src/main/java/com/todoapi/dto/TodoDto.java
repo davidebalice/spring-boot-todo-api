@@ -1,6 +1,6 @@
 package com.todoapi.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.todoapi.model.Category;
 import com.todoapi.model.Status;
@@ -23,5 +23,5 @@ public class TodoDto {
     private UserTodoDto user;
     private boolean completed;
     private String imageUrl;
-    private LocalDateTime createdAt;
+    private LocalDate date;
 }
