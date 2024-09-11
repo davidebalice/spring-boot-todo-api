@@ -64,6 +64,7 @@ public class SecurityConfig {
 			List<String> allowedOrigins = new ArrayList<>();
 			allowedOrigins.add("http://localhost");
 			allowedOrigins.add("http://localhost:4200");
+			allowedOrigins.add("https://angular-todo.davidebalice.dev");
 			CorsConfiguration config = new CorsConfiguration();
 			config.setAllowedOrigins(allowedOrigins);
 			config.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS"));

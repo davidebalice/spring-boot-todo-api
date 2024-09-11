@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.todoapi.config.DemoMode;
+
+import com.todoapi.exception.DemoModeException;
+
+
 import com.todoapi.dto.CategoryDto;
 import com.todoapi.model.Category;
 import com.todoapi.repository.CategoryRepository;
@@ -42,6 +47,9 @@ public class CategoryController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     // Get all Categories Rest Api
     // http://localhost:8081/api/v1/categories
@@ -75,6 +83,9 @@ public class CategoryController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<String> add(@Valid @RequestBody Category p) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         repository.save(p);
         return new ResponseEntity<>("Category addedd successfully!", HttpStatus.OK);
     }
@@ -86,6 +97,9 @@ public class CategoryController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody Category updatedCategory) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.updateCategory(id, updatedCategory);
     }
     //
@@ -96,6 +110,9 @@ public class CategoryController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteCategory(id);
         return new ResponseEntity<>("Category deleted successfully!", HttpStatus.OK);
     }

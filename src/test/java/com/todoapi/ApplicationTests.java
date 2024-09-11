@@ -25,7 +25,7 @@ public class ApplicationTests {
         assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/test",
                 String.class)).contains("test controller");
     }
-
+ 
     @Test
     public void getCliente() {
     ResponseEntity<Todo> responseEntity = restTemplate.getForEntity("/api/customers/{id}", Todo.class, 1);

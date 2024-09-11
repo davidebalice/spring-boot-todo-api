@@ -27,8 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.todoapi.config.DemoMode;
 import com.todoapi.dto.TodoCreateDto;
 import com.todoapi.dto.TodoDto;
+import com.todoapi.exception.DemoModeException;
 import com.todoapi.model.Todo;
 import com.todoapi.repository.TodoRepository;
 import com.todoapi.service.TodoService;
@@ -55,6 +57,9 @@ public class TodoController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private DemoMode demoMode;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -73,11 +78,14 @@ public class TodoController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-
-        if (keyword == null) keyword = ""; 
-        if (categoryId == null) categoryId = 0;
-        if (tagId == null) tagId = 0;
-        if (statusId == null) statusId = 0;
+        if (keyword == null)
+            keyword = "";
+        if (categoryId == null)
+            categoryId = 0;
+        if (tagId == null)
+            tagId = 0;
+        if (statusId == null)
+            statusId = 0;
 
         Iterable<Todo> todos = repository.searchTodos(keyword, categoryId, tagId, statusId, pageable);
 
@@ -128,6 +136,9 @@ public class TodoController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<TodoDto> add(@RequestBody TodoCreateDto todoDto) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         TodoDto savedTodo = service.addTodo(todoDto);
         return new ResponseEntity<>(savedTodo, HttpStatus.CREATED);
     }
@@ -139,6 +150,9 @@ public class TodoController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<FormatResponse> update(@PathVariable Integer id, @RequestBody TodoCreateDto updatedTodo) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         if (!repository.existsById(id)) {
             return new ResponseEntity<FormatResponse>(new FormatResponse("Todo not found"), HttpStatus.NOT_FOUND);
         }
@@ -152,6 +166,9 @@ public class TodoController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<FormatResponse> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteTodo(id);
         return new ResponseEntity<FormatResponse>(new FormatResponse("Todo deleted successfully!"), HttpStatus.OK);
     }
@@ -183,6 +200,9 @@ public class TodoController {
     // http://localhost:8081/api/v1/todos/1/complete
     @PatchMapping("{id}/complete")
     public ResponseEntity<FormatResponse> completeTodo(@PathVariable("id") int todoId) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.completeTodo(todoId, true);
     }
 
@@ -190,6 +210,9 @@ public class TodoController {
     // http://localhost:8081/api/v1/todos/1/inprogress
     @PatchMapping("{id}/inprogress")
     public ResponseEntity<FormatResponse> inCompleteTodo(@PathVariable("id") int todoId) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.completeTodo(todoId, false);
     }
 
@@ -198,6 +221,9 @@ public class TodoController {
     @PostMapping("/{id}/uploadImage")
     public ResponseEntity<FormatResponse> uploadImage(@PathVariable int id,
             @RequestParam("image") MultipartFile multipartFile) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         try {
             String fileDownloadUri = service.uploadImage(id, multipartFile, uploadPath);
             return new ResponseEntity<>(new FormatResponse(fileDownloadUri), HttpStatus.OK);

@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import com.todoapi.config.DemoMode;
+
+import com.todoapi.exception.DemoModeException;
+
 import com.todoapi.model.Status;
 import com.todoapi.repository.StatusRepository;
 import com.todoapi.service.StatusService;
@@ -41,6 +46,9 @@ public class StatusController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     // Get all Categories Rest Api
     // http://localhost:8081/api/v1/status
@@ -74,6 +82,9 @@ public class StatusController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<String> add(@Valid @RequestBody Status p) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         repository.save(p);
         return new ResponseEntity<>("Status addedd successfully!", HttpStatus.OK);
     }
@@ -85,6 +96,9 @@ public class StatusController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody Status updatedStatus) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.updateStatus(id, updatedStatus);
     }
     //
@@ -95,6 +109,9 @@ public class StatusController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteStatus(id);
         return new ResponseEntity<>("Status deleted successfully!", HttpStatus.OK);
     }

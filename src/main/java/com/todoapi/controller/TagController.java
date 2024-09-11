@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import com.todoapi.config.DemoMode;
+
+import com.todoapi.exception.DemoModeException;
+
 import com.todoapi.model.Tag;
 import com.todoapi.repository.TagRepository;
 import com.todoapi.service.TagService;
@@ -41,6 +46,9 @@ public class TagController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private DemoMode demoMode;
 
     // Get all Categories Rest Api
     // http://localhost:8081/api/v1/tags
@@ -74,6 +82,9 @@ public class TagController {
     @ApiResponse(responseCode = "201", description = "HTTP Status 201 Created")
     @PostMapping("/add")
     public ResponseEntity<String> add(@Valid @RequestBody Tag p) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         repository.save(p);
         return new ResponseEntity<>("Tag addedd successfully!", HttpStatus.OK);
     }
@@ -85,6 +96,9 @@ public class TagController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @PatchMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Integer id, @RequestBody Tag updatedTag) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         return service.updateTag(id, updatedTag);
     }
     //
@@ -95,6 +109,9 @@ public class TagController {
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 SUCCESS")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Integer id) {
+        if (demoMode.isEnabled()) {
+            throw new DemoModeException();
+        }
         service.deleteTag(id);
         return new ResponseEntity<>("Tag deleted successfully!", HttpStatus.OK);
     }
